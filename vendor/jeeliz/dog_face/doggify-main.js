@@ -86,7 +86,8 @@ function drawImageCover(img) {
   const iw = img.naturalWidth || img.width;
   const ih = img.naturalHeight || img.height;
   if (!iw || !ih) return;
-  const scale = Math.max(cw / iw, ch / ih);
+  // contain (letterbox) — never crop the photo so the full face is always visible
+  const scale = Math.min(cw / iw, ch / ih);
   const dw = iw * scale;
   const dh = ih * scale;
   pumpCtx.clearRect(0, 0, cw, ch);
