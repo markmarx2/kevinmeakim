@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- Jeeliz FaceFilter + Three.js dog demo stack (Apache-2.0) -->
+  <!-- Jeeliz FaceFilter + Three.js stack (Apache-2.0) — supports dog and tiger -->
   <script src="vendor/jeeliz/dist/jeelizFaceFilter.js"></script>
   <script src="vendor/jeeliz/libs/three/v97/three.min.js"></script>
   <script src="vendor/jeeliz/helpers/JeelizThreeHelper.js"></script>
@@ -25,16 +25,19 @@
         <a href="index.html">HOME</a>
         <a href="doggify.html" aria-current="page">DOGGIFY</a>
       </nav>
-      <a class="button button-primary" href="index.html#notify">NOTIFY ME</a>
+      <div class="header-actions">
+        <a class="button button-primary" href="index.html#notify">NOTIFY ME</a>
+        <a class="button button-donate" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">DONATE TO THE PROJECT</a>
+      </div>
     </header>
 
     <main class="doggify-main container">
-      <p class="hero-marker">OPEN SOURCE · JEELIZ FACEFILTER DOG DEMO</p>
+      <p class="hero-marker">OPEN SOURCE · JEELIZ FACEFILTER DEMOS</p>
       <h1 class="doggify-title">Doggify Kevin</h1>
       <p class="doggify-lede">
-        Official <strong>Jeeliz</strong> dog filter (Three.js) from
+        Adapted <strong>Jeeliz</strong> filters (Three.js) from
         <a href="https://github.com/jeeliz/jeelizFaceFilter" rel="noopener noreferrer">jeeliz/jeelizFaceFilter</a> (Apache-2.0).
-        Add more photos under <code>doggify/</code> and list them in <code>vendor/jeeliz/dog_face/doggify-main.js</code> (<code>PRESET_KEVINS</code>).
+        Add more photos under <code>doggify/</code> and list them in <code>PRESET_KEVINS</code>.
       </p>
 
       <div class="doggify-toolbar">
@@ -48,7 +51,14 @@
             <input id="photo-upload" class="visually-hidden" type="file" accept="image/*" />
           </label>
         </div>
-        <div class="doggify-filter-wrap">
+        <div class="doggify-filter-type-wrap">
+          <span class="label-caps">Filter</span>
+          <div id="filter-type-picker" class="filter-type-picker" role="group" aria-label="Choose filter">
+            <button class="filter-type-btn" data-filter="dog" type="button">Dog</button>
+            <button class="filter-type-btn" data-filter="tiger" type="button">Tiger</button>
+          </div>
+        </div>
+        <div class="doggify-filter-wrap doggify-dog-only">
           <span class="label-caps">Style</span>
           <div id="filter-picker" class="filter-picker" role="group" aria-label="Choose filter style">
             <button class="filter-btn filter-btn--active" data-filter="pink" type="button">Pink</button>

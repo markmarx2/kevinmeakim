@@ -113,6 +113,35 @@ img {
   border-color: var(--secondary);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.button-donate {
+  background: var(--secondary);
+  color: var(--primary);
+  border-color: var(--secondary);
+  padding: 18px 28px;
+  font-size: 1rem;
+  letter-spacing: 0.16em;
+  box-shadow: 4px 4px 0 var(--primary);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.button-donate:hover,
+.button-donate:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--primary);
+}
+
+.button-donate:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--primary);
+}
+
 .hero {
   display: grid;
   gap: 40px;
@@ -411,9 +440,49 @@ img {
   cursor: pointer;
 }
 
-.doggify-filter-wrap {
+.doggify-filter-wrap,
+.doggify-filter-type-wrap {
   display: grid;
   gap: 10px;
+}
+
+/* Hide the dog-style picker when not on the dog filter */
+body:not(.doggify-filter-dog) .doggify-dog-only {
+  display: none;
+}
+
+.filter-type-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-type-btn {
+  padding: 6px 14px;
+  border: 2px solid var(--border);
+  background: var(--surface-strong);
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.filter-type-btn:hover,
+.filter-type-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.filter-type-btn--active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--inverse);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 .filter-picker {
