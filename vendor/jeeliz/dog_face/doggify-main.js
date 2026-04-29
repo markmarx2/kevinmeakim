@@ -79,10 +79,24 @@ function setupPumpElements() {
   document.body.appendChild(pumpVideo);
 }
 
+function drawImageCover(img) {
+  if (!pumpCtx || !img) return;
+  const cw = pumpCanvas.width;
+  const ch = pumpCanvas.height;
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  if (!iw || !ih) return;
+  const scale = Math.max(cw / iw, ch / ih);
+  const dw = iw * scale;
+  const dh = ih * scale;
+  pumpCtx.clearRect(0, 0, cw, ch);
+  pumpCtx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+}
+
 function startPumpLoop() {
   function loop() {
-    if (pumpCtx && pumpImage && pumpCanvas.width > 0 && pumpCanvas.height > 0) {
-      pumpCtx.drawImage(pumpImage, 0, 0, pumpCanvas.width, pumpCanvas.height);
+    if (pumpCanvas.width > 0 && pumpCanvas.height > 0) {
+      drawImageCover(pumpImage);
     }
     pumpRafId = requestAnimationFrame(loop);
   }
@@ -107,40 +121,26 @@ function loadImagePromise(src) {
   });
 }
 
-/** Resize pump canvas, redraw, recreate MediaStream so Jeeliz sees new dimensions. */
-async function applyPhotoSource(img, recreateStream) {
+/**
+ * Switch the photo being fed to Jeeliz.
+ * After Jeeliz is initialized the pump canvas size is locked — we just swap
+ * pumpImage and the pump loop redraws it cover-scaled every frame. No resize
+ * of the WebGL canvas, which would tear the Three.js scene.
+ */
+async function applyPhotoSource(img) {
   pumpImage = img;
-  const w = img.naturalWidth || img.width;
-  const h = img.naturalHeight || img.height;
-  if (!w || !h) return;
+  drawImageCover(img);
 
-  pumpCanvas.width = w;
-  pumpCanvas.height = h;
-  pumpCtx.drawImage(img, 0, 0);
-
-  if (recreateStream && pumpVideo.srcObject) {
-    pumpVideo.srcObject.getTracks().forEach((t) => t.stop());
-    pumpVideo.srcObject = null;
-  }
-
-  const stream = pumpCanvas.captureStream(30);
-  pumpVideo.srcObject = stream;
-  await pumpVideo.play();
-
-  if (typeof JEELIZFACEFILTER !== 'undefined' && JEELIZFACEFILTER.update_videoElement && FFSPECS) {
-    await new Promise((resolve) => {
-      try {
-        JEELIZFACEFILTER.update_videoElement(pumpVideo, resolve);
-      } catch (e) {
-        resolve();
-      }
-    });
-  }
-
-  if (FFSPECS) {
-    FFSPECS.canvasElement.width = w;
-    FFSPECS.canvasElement.height = h;
-    JEELIZFACEFILTER.resize();
+  // Before Jeeliz init we need an actual stream; after init pumpVideo already
+  // has a live captureStream so the loop update is sufficient.
+  if (!FFSPECS) {
+    if (pumpVideo.srcObject) {
+      pumpVideo.srcObject.getTracks().forEach((t) => t.stop());
+      pumpVideo.srcObject = null;
+    }
+    const stream = pumpCanvas.captureStream(30);
+    pumpVideo.srcObject = stream;
+    await pumpVideo.play();
   }
 }
 
@@ -483,7 +483,7 @@ function buildPicker() {
 
 function loadImageUrl(url, revokeAfter) {
   loadImagePromise(url)
-    .then((img) => applyPhotoSource(img, !!FFSPECS))
+    .then((img) => applyPhotoSource(img))
     .then(() => {
       if (revokeAfter) URL.revokeObjectURL(url);
     })
@@ -569,9 +569,14 @@ function boot() {
     loadImagePromise(PRESET_KEVINS[0].src)
       .then((img) => {
         pumpImage = img;
-        pumpCanvas.width = img.naturalWidth;
-        pumpCanvas.height = img.naturalHeight;
-        pumpCtx.drawImage(img, 0, 0);
+        // Cap initial canvas size — large phone photos kill WebGL memory on mobile
+        const MAX = 720;
+        const iw = img.naturalWidth || img.width;
+        const ih = img.naturalHeight || img.height;
+        const scale = Math.min(1, MAX / Math.max(iw, ih));
+        pumpCanvas.width = Math.round(iw * scale);
+        pumpCanvas.height = Math.round(ih * scale);
+        drawImageCover(img);
         const stream = pumpCanvas.captureStream(30);
         pumpVideo.srcObject = stream;
         return pumpVideo.play();
