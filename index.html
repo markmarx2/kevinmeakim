@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Construct | Under Construction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header container">
+      <a class="brand" href="#">CONSTRUCT</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#timeline">TIMELINE</a>
+        <a href="#specs">SPECS</a>
+      </nav>
+      <a class="button button-primary" href="#notify">NOTIFY ME</a>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <span class="hero-marker">PHASE 1: SCAFFOLDING</span>
+        <h1>THIS PAGE IS UNDER CONSTRUCTION</h1>
+
+        <div class="hero-frame" aria-hidden="true">
+          <img class="hero-photo" src="Kevin.jpg" alt="Construction visual" />
+          <div class="hero-overlay"></div>
+        </div>
+
+        <div class="hero-details">
+          <span class="status-chip">STATUS: BUILDING</span>
+          <div class="progress-wrap">
+            <div class="progress-label">PROJECT 56% COMPLETE</div>
+            <div class="progress-bar" aria-label="Project progress: 56 percent">
+              <span style="width: 56%"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="notify container" id="notify">
+        <div class="notify-card">
+          <p class="label-caps">JOIN THE LIST</p>
+          <h2>Be the first to know when we launch.</h2>
+          <form class="notify-form" onsubmit="handleNotify(event)">
+            <label class="visually-hidden" for="email">Email</label>
+            <input id="email" type="email" placeholder="Email address" required />
+            <button type="submit" class="button button-secondary">Notify me</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer container">
+      <p>&copy; <span id="year"></span> ARCHITECTURAL PRECISION. ALL RIGHTS RESERVED.</p>
+      <div class="footer-links">
+        <span>X</span>
+        <a href="#">LINKEDIN</a>
+        <a href="#">INSTAGRAM</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

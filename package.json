@@ -1,0 +1,13 @@
+{
+  "name": "stitch-under-construction-landing-page",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static under construction landing page",
+  "scripts": {
+    "dev": "npx http-server -c-1 . -p 4173",
+    "start": "npx http-server . -p 4173"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
