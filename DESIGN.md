@@ -129,6 +129,6 @@ The shape language is **Sharp (0)**. Everything from buttons to input fields use
 - **Buttons:** Large, rectangular blocks with no radius. Primary buttons are solid Primary (#0F0F0F) with White text. Secondary buttons are outlined with 2px borders. Hover states should trigger a fill of Secondary (#FFB800).
 - **Input Fields:** Minimalist underlines or 1px borders. Use the Label-caps typography for field descriptors placed above the input.
 - **Progress Bars:** A custom "Construction Bar" component. It should be a thin, sharp rectangle. The filled portion uses the Secondary color, potentially with a subtle CSS-animated diagonal stripe pattern to indicate active progress.
-- **Status Chips:** Small rectangular tags with Primary background and White Label-caps text (e.g., "PHASE 1", "SCAFFOLDING").
+- **Status Chips:** Small rectangular tags with Primary background and White Label-caps text (e.g., "PHASE 1", "ideating").
 - **Cards:** Simple containers defined by a 1px border (#E5E5E5) with no shadow. Used for "Project Milestones" or "Feature Teasers."
 - **Countdown Timer:** Large, high-contrast Display typography separated by thin vertical lines to look like a digital ledger.
