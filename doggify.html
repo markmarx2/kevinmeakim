@@ -34,7 +34,6 @@
       <p class="doggify-lede">
         Official <strong>Jeeliz</strong> dog filter (Three.js) from
         <a href="https://github.com/jeeliz/jeelizFaceFilter" rel="noopener noreferrer">jeeliz/jeelizFaceFilter</a> (Apache-2.0).
-        Your photo is painted to a hidden canvas, streamed to a video element, and passed as <code>videoSettings.videoElement</code> — <strong>no webcam</strong>.
         Add more photos under <code>doggify/</code> and list them in <code>vendor/jeeliz/dog_face/doggify-main.js</code> (<code>PRESET_KEVINS</code>).
       </p>
 
@@ -48,6 +47,14 @@
             Upload image
             <input id="photo-upload" class="visually-hidden" type="file" accept="image/*" />
           </label>
+        </div>
+        <div class="doggify-filter-wrap">
+          <span class="label-caps">Style</span>
+          <div id="filter-picker" class="filter-picker" role="group" aria-label="Choose filter style">
+            <button class="filter-btn filter-btn--active" data-filter="pink" type="button">Pink</button>
+            <button class="filter-btn" data-filter="white" type="button">White</button>
+            <button class="filter-btn" data-filter="none" type="button">Classic</button>
+          </div>
         </div>
         <button id="download-btn" type="button" class="button">Download PNG</button>
       </div>

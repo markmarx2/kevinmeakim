@@ -1,13 +1,20 @@
 /**
  * Dog filter: Jeeliz FaceFilter dog_face demo (Apache-2.0).
  *
- * Photos only — no webcam: Jeeliz expects a <video> source; we pass a hidden
- * video fed by canvas.captureStream() that paints your image each frame (library API:
- * videoSettings.videoElement skips getUserMedia — see dist/jeelizFaceFilter.js init).
+ * Photos only — Jeeliz expects a <video> source; we pass a hidden video fed by
+ * canvas.captureStream() that paints your image each frame.
+ * Filter styles: 'pink' (default tint), 'white' (white tint), 'none' (no tint).
  */
 
 const ASSET_BASE = 'vendor/jeeliz/dog_face/';
-const PRESET_KEVINS = [{ src: 'doggify/Kevin.jpg', label: 'Kevin' }];
+const PRESET_KEVINS = [
+  { src: 'doggify/Kevin.jpg',      label: 'Kevin' },
+  { src: 'doggify/IMG_6657.jpeg',  label: 'Photo 2' },
+  { src: 'doggify/IMG_6658.jpeg',  label: 'Photo 3' },
+  { src: 'doggify/IMG_6659.jpeg',  label: 'Photo 4' },
+  { src: 'doggify/IMG_6661.jpeg',  label: 'Photo 5' },
+  { src: 'doggify/IMG_6662.jpeg',  label: 'Photo 6' },
+];
 
 let THREECAMERA = null;
 let ISDETECTED = false;
@@ -30,10 +37,13 @@ let ISTONGUEOUT = false;
 let ISANIMATIONOVER = false;
 
 let _videoGeometry = null;
-
 let FFSPECS = null;
 
-/** Off-screen 2D canvas → MediaStream → hidden video (Jeeliz input, no webcam). */
+// Filter style: 'pink' | 'white' | 'none'
+let CURRENT_FILTER = 'pink';
+let OVERLAYMESH = null;
+
+/** Off-screen 2D canvas → MediaStream → hidden video. */
 let pumpCanvas = null;
 let pumpCtx = null;
 let pumpVideo = null;
@@ -56,12 +66,15 @@ function setupPumpElements() {
   pumpCtx = pumpCanvas.getContext('2d');
   pumpVideo = document.createElement('video');
   pumpVideo.setAttribute('playsinline', '');
+  pumpVideo.setAttribute('webkit-playsinline', '');
   pumpVideo.setAttribute('muted', '');
+  pumpVideo.setAttribute('autoplay', '');
   pumpVideo.muted = true;
   pumpVideo.autoplay = true;
-  pumpCanvas.style.cssText =
+  const offscreen =
     'position:fixed;left:-9999px;top:0;width:4px;height:4px;opacity:0;pointer-events:none';
-  pumpVideo.style.cssText = pumpCanvas.style.cssText;
+  pumpCanvas.style.cssText = offscreen;
+  pumpVideo.style.cssText = offscreen;
   document.body.appendChild(pumpCanvas);
   document.body.appendChild(pumpVideo);
 }
@@ -156,7 +169,21 @@ function create_mat2d(threeTexture, isTransparent) {
   });
 }
 
-function apply_filter() {
+function apply_filter(filterType) {
+  // Remove any existing overlay mesh
+  if (OVERLAYMESH && FRAMEOBJ3D) {
+    FRAMEOBJ3D.remove(OVERLAYMESH);
+    if (OVERLAYMESH.material) {
+      if (OVERLAYMESH.material.uniforms && OVERLAYMESH.material.uniforms.samplerVideo) {
+        OVERLAYMESH.material.uniforms.samplerVideo.value.dispose();
+      }
+      OVERLAYMESH.material.dispose();
+    }
+    OVERLAYMESH = null;
+  }
+
+  if (!filterType || filterType === 'none') return;
+
   let canvas;
   try {
     canvas = fx.canvas();
@@ -165,8 +192,10 @@ function apply_filter() {
     return;
   }
 
+  const texFile = filterType === 'white' ? 'texture_white.jpg' : 'texture_pink.jpg';
+
   const tempImage = new Image(512, 512);
-  tempImage.src = ASSET_BASE + 'images/texture_pink.jpg';
+  tempImage.src = ASSET_BASE + 'images/' + texFile;
 
   tempImage.onload = () => {
     const texture = canvas.texture(tempImage);
@@ -176,20 +205,29 @@ function apply_filter() {
     canvasOpacity.width = 512;
     canvasOpacity.height = 512;
     const ctx = canvasOpacity.getContext('2d');
-
     ctx.globalAlpha = 0.2;
     ctx.drawImage(canvas, 0, 0, 512, 512);
 
-    const calqueMesh = new THREE.Mesh(
+    const mesh = new THREE.Mesh(
       _videoGeometry,
       create_mat2d(new THREE.TextureLoader().load(canvasOpacity.toDataURL('image/png')), true),
     );
-    calqueMesh.material.opacity = 0.2;
-    calqueMesh.material.transparent = true;
-    calqueMesh.renderOrder = 999;
-    calqueMesh.frustumCulled = false;
-    FRAMEOBJ3D.add(calqueMesh);
+    mesh.material.opacity = 0.2;
+    mesh.material.transparent = true;
+    mesh.renderOrder = 999;
+    mesh.frustumCulled = false;
+    OVERLAYMESH = mesh;
+    FRAMEOBJ3D.add(mesh);
   };
+}
+
+/** Called from the filter picker UI. */
+function switch_filter(filterType) {
+  CURRENT_FILTER = filterType;
+  document.querySelectorAll('.filter-btn').forEach((b) => {
+    b.classList.toggle('filter-btn--active', b.dataset.filter === filterType);
+  });
+  if (ISLOADED) apply_filter(filterType);
 }
 
 function init_threeScene(spec) {
@@ -283,6 +321,8 @@ function init_threeScene(spec) {
 
     ISLOADED = true;
     setStatus('Dog filter active. Open mouth wide for the tongue.');
+
+    apply_filter(CURRENT_FILTER);
   };
 
   const ambient = new THREE.AmbientLight(0xffffff, 0.8);
@@ -295,8 +335,6 @@ function init_threeScene(spec) {
   THREECAMERA = JeelizThreeHelper.create_camera();
 
   threeStuffs.scene.add(FRAMEOBJ3D);
-
-  apply_filter();
 }
 
 function animate_tongue(mesh, isReverse) {
@@ -455,10 +493,46 @@ function loadImageUrl(url, revokeAfter) {
     });
 }
 
+function wireFilterPicker() {
+  document.querySelectorAll('.filter-btn').forEach((btn) => {
+    btn.addEventListener('click', () => switch_filter(btn.dataset.filter));
+  });
+}
+
+/**
+ * Show a tap-to-start overlay button over the canvas.
+ * Used as a fallback when autoplay is blocked (common on mobile).
+ */
+function showTapToStart(startFn) {
+  const wrap = document.querySelector('.doggify-canvas-wrap');
+  if (!wrap) { startFn(); return; }
+
+  const overlay = document.createElement('button');
+  overlay.type = 'button';
+  overlay.className = 'doggify-tap-start';
+  overlay.textContent = 'Tap to start';
+  wrap.appendChild(overlay);
+
+  overlay.addEventListener('click', () => {
+    overlay.remove();
+    startFn();
+  }, { once: true });
+}
+
 function boot() {
+  // Check captureStream support early — surface a clear message rather than a silent failure
+  if (typeof HTMLCanvasElement.prototype.captureStream !== 'function') {
+    setStatus(
+      'This filter requires canvas streaming support. Try Chrome, Firefox, or update your browser.',
+      true,
+    );
+    return;
+  }
+
   DOGOBJ3D = new THREE.Object3D();
   FRAMEOBJ3D = new THREE.Object3D();
 
+  wireFilterPicker();
   setupPumpElements();
 
   const downloadBtn = document.getElementById('download-btn');
@@ -489,26 +563,36 @@ function boot() {
   }
 
   buildPicker();
-  setStatus('Loading photo & Jeeliz (no webcam)…');
+  setStatus('Loading…');
 
-  loadImagePromise(PRESET_KEVINS[0].src)
-    .then((img) => {
-      pumpImage = img;
-      pumpCanvas.width = img.naturalWidth;
-      pumpCanvas.height = img.naturalHeight;
-      pumpCtx.drawImage(img, 0, 0);
-      const stream = pumpCanvas.captureStream(30);
-      pumpVideo.srcObject = stream;
-      return pumpVideo.play();
-    })
-    .then(() => {
-      startPumpLoop();
-      init_faceFilter();
-    })
-    .catch((e) => {
-      console.error(e);
-      setStatus('Could not prepare image/video stream. Serve over http(s):// not file://.', true);
-    });
+  function startFilter() {
+    loadImagePromise(PRESET_KEVINS[0].src)
+      .then((img) => {
+        pumpImage = img;
+        pumpCanvas.width = img.naturalWidth;
+        pumpCanvas.height = img.naturalHeight;
+        pumpCtx.drawImage(img, 0, 0);
+        const stream = pumpCanvas.captureStream(30);
+        pumpVideo.srcObject = stream;
+        return pumpVideo.play();
+      })
+      .then(() => {
+        startPumpLoop();
+        init_faceFilter();
+      })
+      .catch((e) => {
+        if (e && e.name === 'NotAllowedError') {
+          // Autoplay blocked (common on mobile) — require a tap to start
+          setStatus('Tap the canvas to start.');
+          showTapToStart(startFilter);
+        } else {
+          console.error(e);
+          setStatus('Could not prepare image stream. Serve over http(s):// not file://.', true);
+        }
+      });
+  }
+
+  startFilter();
 }
 
 window.addEventListener('load', boot);

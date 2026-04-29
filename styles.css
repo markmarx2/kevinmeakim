@@ -411,6 +411,64 @@ img {
   cursor: pointer;
 }
 
+.doggify-filter-wrap {
+  display: grid;
+  gap: 10px;
+}
+
+.filter-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border: 2px solid var(--border);
+  background: var(--surface-strong);
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.filter-btn:hover,
+.filter-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.filter-btn--active {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 1px var(--secondary);
+}
+
+/* Tap-to-start overlay button (mobile autoplay fallback) */
+.doggify-canvas-wrap {
+  position: relative;
+}
+
+.doggify-tap-start {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
 .doggify-status {
   margin: 0;
   font-size: 0.9rem;
