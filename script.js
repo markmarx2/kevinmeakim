@@ -1,6 +1,6 @@
 const yearEl = document.getElementById('year');
 if (yearEl) {
-  yearEl.textContent = new Date().getFullYear();
+  yearEl.textContent = 1996;
 }
 
 function handleNotify(event) {
