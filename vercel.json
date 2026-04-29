@@ -1,13 +1,5 @@
 {
   "buildCommand": "",
   "installCommand": "npm install",
-  "devCommand": "npm run dev",
-  "env": {},
-  "functions": {},
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    }
-  ]
+  "devCommand": "npm run dev"
 }
