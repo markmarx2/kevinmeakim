@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doggify | CONSTRUCT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Jeeliz FaceFilter + Three.js dog demo stack (Apache-2.0) -->
+  <script src="vendor/jeeliz/dist/jeelizFaceFilter.js"></script>
+  <script src="vendor/jeeliz/libs/three/v97/three.min.js"></script>
+  <script src="vendor/jeeliz/helpers/JeelizThreeHelper.js"></script>
+  <script src="vendor/jeeliz/libs/three/customMaterials/FlexMaterial/ThreeFlexMaterial.js"></script>
+  <script src="vendor/jeeliz/libs/tween/v16_3_5/Tween.min.js"></script>
+  <script src="vendor/jeeliz/dog_face/libs/glfx.js"></script>
+  <script src="vendor/jeeliz/helpers/addDragEventListener.js"></script>
+</head>
+<body class="doggify-page">
+  <div class="page-shell">
+    <header class="site-header container">
+      <a class="brand" href="index.html">CONSTRUCT</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="index.html">HOME</a>
+        <a href="doggify.html" aria-current="page">DOGGIFY</a>
+      </nav>
+      <a class="button button-primary" href="index.html#notify">NOTIFY ME</a>
+    </header>
+
+    <main class="doggify-main container">
+      <p class="hero-marker">OPEN SOURCE · JEELIZ FACEFILTER DOG DEMO</p>
+      <h1 class="doggify-title">Doggify Kevin</h1>
+      <p class="doggify-lede">
+        Official <strong>Jeeliz</strong> dog filter (Three.js) from
+        <a href="https://github.com/jeeliz/jeelizFaceFilter" rel="noopener noreferrer">jeeliz/jeelizFaceFilter</a> (Apache-2.0).
+        Your photo is painted to a hidden canvas, streamed to a video element, and passed as <code>videoSettings.videoElement</code> — <strong>no webcam</strong>.
+        Add more photos under <code>doggify/</code> and list them in <code>vendor/jeeliz/dog_face/doggify-main.js</code> (<code>PRESET_KEVINS</code>).
+      </p>
+
+      <div class="doggify-toolbar">
+        <div class="doggify-presets">
+          <span class="label-caps">Kevin photos</span>
+          <div id="kevin-picker" class="kevin-picker" role="group" aria-label="Choose a Kevin photo"></div>
+        </div>
+        <div class="doggify-upload-wrap">
+          <label class="button button-secondary doggify-upload-label">
+            Upload image
+            <input id="photo-upload" class="visually-hidden" type="file" accept="image/*" />
+          </label>
+        </div>
+        <button id="download-btn" type="button" class="button">Download PNG</button>
+      </div>
+
+      <p id="doggify-status" class="doggify-status" role="status"></p>
+
+      <div class="doggify-canvas-wrap doggify-canvas-wrap--jeeliz">
+        <canvas id="jeeFaceFilterCanvas" class="doggify-canvas" width="600" height="600" aria-label="Jeeliz dog filter preview"></canvas>
+      </div>
+
+      <footer class="doggify-footer">
+        <p>
+          <a href="https://github.com/jeeliz/jeelizFaceFilter/tree/master/demos/threejs/dog_face" rel="noopener noreferrer">Jeeliz dog_face demo</a>
+          · <a href="https://github.com/jeeliz/jeelizFaceFilter/blob/master/LICENSE" rel="noopener noreferrer">Apache-2.0</a>.
+          Neural nets and helpers are vendored under <code>vendor/jeeliz/</code>.
+        </p>
+      </footer>
+    </main>
+
+    <footer class="site-footer container">
+      <p>&copy; <span id="year"></span> SHENANIGANS COMING SOON.</p>
+      <div class="footer-links">
+        <a href="index.html">HOME</a>
+        <a href="doggify.html">DOGGIFY</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="vendor/jeeliz/dog_face/doggify-main.js"></script>
+</body>
+</html>
